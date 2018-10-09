@@ -1,0 +1,15 @@
+.List {
+  width: 80%;
+}
+
+.List li {
+  height: 6em;
+  border: 1px solid darkGrey;
+  border-bottom: none;
+  list-style-type: none;
+}
+
+.List ul li img {
+  height: 5em;
+  float: left;
+}
