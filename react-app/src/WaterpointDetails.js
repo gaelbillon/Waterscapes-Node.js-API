@@ -1,14 +1,15 @@
 import PropTypes from 'prop-types'
-import React, { Component } from 'react'
+import React from 'react'
 
 import './WaterpointDetails.css'
 
 const WaterpointDetails = ({selectedWaterpoint}) => (
 	<div className="Details">
+		<img src={selectedWaterpoint.picture} alt={selectedWaterpoint.name} />
+		<h1>{selectedWaterpoint.name}</h1>
 		<ul>
-			<li>Name: {selectedWaterpoint.name}</li>
 			<li>Type: {selectedWaterpoint.type}</li>
-			<li>Id: {selectedWaterpoint._id}</li>
+			<li>Location: {selectedWaterpoint.location.coordinates[0][0]}, {selectedWaterpoint.location.coordinates[0][1]}</li>
 		</ul>
 	</div>
 )

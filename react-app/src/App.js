@@ -19,13 +19,12 @@ class App extends Component {
 	}
 
 	componentDidMount() {
-		fetch('http://localhost:3000/waterpoints') //, {'mode': 'no-cors'}
+		fetch('http://localhost:3000/waterpoints')
 		  .then(response => response.json())
 		  .then(data => this.setState({ waterpoints: data.waterpoints }));
 	}    
 
 	handleListItemClick (waterpoint) {
-		console.log(waterpoint);
 		this.setState({
 			selectedWaterpoint: waterpoint,
 		})
