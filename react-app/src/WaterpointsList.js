@@ -3,7 +3,7 @@ import React from 'react'
 
 import './WaterpointsList.css'
 
-const WaterpointsList = ({waterpoints, onClick}) => (
+const WaterpointsList = ({ waterpoints, apiUrl, onClick}) => (
 	<div className="List">
 	  <ul>
 	    {waterpoints.map(waterpoint =>
@@ -12,7 +12,7 @@ const WaterpointsList = ({waterpoints, onClick}) => (
 	      onClick={ () => onClick(waterpoint)}
 	      >
 	        <div>
-	          <img src={waterpoint.picture} alt={waterpoint.name} />
+						<img src={apiUrl + waterpoint.picturePath + "/" + waterpoint.picture} alt={waterpoint.name} />
 	        </div>   
 	        <div className="ListText">
 	          <p>
@@ -26,6 +26,7 @@ const WaterpointsList = ({waterpoints, onClick}) => (
 	</div>
 )
 
+// Typechecking
 WaterpointsList.propTypes = {
 	waterpoint: PropTypes.shape({
 		_id: PropTypes.string.isRequired,
@@ -37,7 +38,8 @@ WaterpointsList.propTypes = {
 		}).isRequired,
 		name: PropTypes.string.isRequired,
 		picture: PropTypes.string.isRequired,
-		type: PropTypes.string.isRequired
+		picturePath: PropTypes.string.isRequired,
+		type: PropTypes.string.isRequired,
 	})
 } 
 

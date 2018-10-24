@@ -1,5 +1,27 @@
 var express = require('express');
 
+// Multer helps us to handle multipart forms 
+// https://www.npmjs.com/package/multer
+var multer = require('multer')
+
+
+const PICTURE_PATH = "uploaded-images"
+
+//TODO add options : fileFilter and limits
+// Tell multer where to save images and with wich filename
+let storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './public/' + PICTURE_PATH)
+    },
+    filename: function (req, file, cb) {
+        let extArray = file.mimetype.split("/");
+        let extension = extArray[extArray.length - 1];
+        cb(null, file.fieldname + '-' + Date.now() + '.' + extension)
+    }
+}) 
+const upload = multer({ storage: storage })
+// const upload = multer({ dest: 'uploads/' })
+
 var hostname = 'localhost';
 var port = 3000;
 
@@ -8,9 +30,13 @@ var router = express.Router();
 
 var bodyParser = require("body-parser");
 app.use(bodyParser.urlencoded({
-    extended: false
+    extended: false,
+    // type: "application/x-www-form-urlencoded",
 }));
-app.use(bodyParser.json());
+// app.use(bodyParser.json());
+
+//Let express serve images form the uploads directory
+app.use(express.static('public'))
 
 // Not required anymore, using Chrome Canary with flag
 // var cors = require('cors');
@@ -48,6 +74,7 @@ var waterpointSchema = new Schema({
     name: String,
     type: String,
     picture: String,
+    picturePath: String,
     location: Schema.Types.Mixed
 });
 var Waterpoint = mongoose.model('Waterpoint', waterpointSchema);
@@ -64,13 +91,6 @@ router.route('/')
 router.route('/waterpoints')
     // GET
     .get(function(req, res) {
-        // Use Waterpoints schema to query database
-        // Waterpoint.find(function(err, waterpoints) {
-        //     if (err) {
-        //         res.send(err);
-        //     }
-        //     res.json(waterpoints);
-        // });
         Waterpoint.find(function (err, waterpoints) {
             if (err) {
                 res.send(err);
@@ -84,10 +104,11 @@ router.route('/waterpoints')
                     name: waterpoint.name,
                     type: waterpoint.type,
                     picture: waterpoint.picture,
+                    picturePath: waterpoint.picturePath,
                     location: {
                         type: waterpoint.location.type,
                         coordinates:[waterpoint.location.coordinates]
-                    }
+                    },
                 })
             });
             res.json(response);
@@ -95,24 +116,34 @@ router.route('/waterpoints')
     })
     
     // POST
-    .post(function(req, res) {
+    // TODO handle multiple images upload
+    // TODO limit max uploaded images
+    .post(upload.single('picture'), function(req, res) {
+        
+        //TODO handle incomplete request (eg: only name is present but type, picture and location are missing)
 
     	// Validate request, check if no params
 	   	if (Object.keys(req.body).length === 0 && req.body.constructor === Object) {
     	    return res.status(400).send({
     	        message: "Content can not be empty"
     	    });
-    	}
+        }
         
+        // TODO: handle more mime types, limit mime types
 		var waterpoint = new Waterpoint({
 		    name: req.body.name,
 		    type: req.body.type,
-		    picture: req.body.picture,
-		    location: {
+            picture: req.file.filename,
+            picturePath: PICTURE_PATH, // Sending the uploads directory path in response will allow, if needed, to change the location of this directory later
+            location: {
 		        type: "Point",
-		        coordinates: [parseFloat(req.body.latitude), parseFloat(req.body.longitude)]
+                coordinates: [
+                    parseFloat(req.body.latitude),
+                    parseFloat(req.body.longitude)
+                ]
 		    }
-		});
+        });
+        console.log(waterpoint);
 
         // Storing object in database
         waterpoint.save(function(err) {
@@ -141,7 +172,7 @@ router.route('/waterpoints')
             methode: req.method
         });
     })
-
+    // TODO Add delete without id -> removes last added waterpoint
 
 //////////////// Routes for waterpoints id //////////////
 router.route('/waterpoints/:waterpoint_id')

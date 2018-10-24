@@ -3,9 +3,9 @@ import React from 'react'
 
 import './WaterpointDetails.css'
 
-const WaterpointDetails = ({selectedWaterpoint}) => (
+const WaterpointDetails = ({ selectedWaterpoint, apiUrl}) => (
 	<div className="Details">
-		<img src={selectedWaterpoint.picture} alt={selectedWaterpoint.name} />
+		<img src={apiUrl + selectedWaterpoint.picturePath + "/" + selectedWaterpoint.picture} alt={selectedWaterpoint.name} />
 		<h1>{selectedWaterpoint.name}</h1>
 		<ul>
 			<li>Type: {selectedWaterpoint.type}</li>
@@ -25,6 +25,7 @@ WaterpointDetails.propTypes = {
 		}).isRequired,
 		name: PropTypes.string.isRequired,
 		picture: PropTypes.string.isRequired,
+		picturePath: PropTypes.string.isRequired,
 		type: PropTypes.string.isRequired
 	})
 } 
