@@ -58,7 +58,7 @@ var options = {
         }
     }
 };
-var databaseUrl = "mongodb://localhost:27017/jezero";
+var databaseUrl = "mongodb://localhost:27017/waterscapes";
 mongoose.connect(databaseUrl, options);
 
 var db = mongoose.connection;
@@ -83,7 +83,7 @@ router.route('/')
     // ALL
     .all(function(req, res) {
         res.json({
-            message: "Bienvenue sur Jezero",
+            message: "Bienvenue sur Waterscapes",
             methode: req.method
         });
     });
